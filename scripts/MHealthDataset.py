@@ -26,12 +26,12 @@ class MHealthDataset(Dataset):
         
     def load_data(self):
         self.data = pd.read_csv(self.data_dir,delimiter=",", header=None, dtype=np.float32).values
-        self.labels = pd.read_csv(self.labels_dir,delimiter=",", header=None, dtype=np.float32).values
+        self.labels = pd.read_csv(self.labels_dir, delimiter=",", header=None).values
     
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        return torch.Tensor(self.data[idx]), torch.Tensor(self.labels[idx])
+        return (torch.Tensor(self.data[idx]), int(self.labels[idx][0]))
 
 

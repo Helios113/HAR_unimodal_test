@@ -1,9 +1,7 @@
-from traceback import print_tb
 import numpy as np
 import pandas as pd
 from pathlib import Path
 import time
-import torch
 
 dir = Path("data")
 data_ext=".log"
@@ -23,13 +21,14 @@ for file in dir.glob('**/*'+data_ext):
         li = np.append(li,data[data[:,-1]!=0,:], axis=0)
 # separate data from labels
 labels = li[:, 23:].astype(int)
+# data = (li[:, :23]-np.min(li[:, :23],axis=0))/(np.max(li[:, :23],axis=0)-np.min(li[:, :23],axis=0))
 data = li[:, :23]
 t1e = time.time();
 # Define the window size and the stride
 # Window size
 WINDOW_SIZE = 20
 # Stride
-STRIDE = 1
+STRIDE = 2
 t2s=time.time();
 windows = None
 window_labels = None
@@ -53,11 +52,10 @@ for i in range(0, data.shape[0]-WINDOW_SIZE, STRIDE):
     l = np.zeros(13)
     for j in labels[i:i+WINDOW_SIZE]:
         l[j]+=1
-    l/=WINDOW_SIZE
     if window_labels is None:
-        window_labels = l
+        window_labels = l.argmax()
     else:
-        window_labels = np.vstack((window_labels,l))
+        window_labels = np.vstack((window_labels,l.argmax()))
 print("\n")
 t2e = time.time();
 print(r"Data loading took: {tm:>21.5f}s".format(tm=t1e-t1s))
